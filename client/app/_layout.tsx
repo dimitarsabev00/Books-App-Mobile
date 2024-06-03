@@ -12,6 +12,8 @@ import "react-native-reanimated";
 
 import { useColorScheme } from "@/components/useColorScheme";
 
+import { ApolloClient, InMemoryCache, ApolloProvider } from "@apollo/client";
+
 export {
   // Catch any errors thrown by the Layout component.
   ErrorBoundary,
@@ -49,15 +51,29 @@ export default function RootLayout() {
   return <RootLayoutNav />;
 }
 
+const API_KEY =
+  "dertka::local.net+1000::4debfbca846a56ad09e327667b661df10846c2a2094c6e86a2c91a24b79deff5";
+
+// Initialize Apollo Client
+const client = new ApolloClient({
+  uri: "https://dertka.eu-central-a.ibm.stepzen.net/api/hoping-rabbit/__graphql",
+  headers: {
+    Authorization: `Apikey ${API_KEY}`,
+  },
+  cache: new InMemoryCache(),
+});
+
 function RootLayoutNav() {
   const colorScheme = useColorScheme();
 
   return (
-    <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="modal" options={{ presentation: "modal" }} />
-      </Stack>
-    </ThemeProvider>
+    <ApolloProvider client={client}>
+      <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
+        <Stack>
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen name="modal" options={{ presentation: "modal" }} />
+        </Stack>
+      </ThemeProvider>
+    </ApolloProvider>
   );
 }
