@@ -39,8 +39,28 @@ const query = gql`
 `;
 export default function TabOneScreen() {
   const [search, setSearch] = useState("");
-
+  const [provider, setProvider] = useState<
+    "googleBooksSearch" | "openLibrarySearch"
+  >("googleBooksSearch");
   const [runQuery, { data, loading, error }] = useLazyQuery(query);
+
+  const parseBook = (item: any) => {
+    if (provider === "googleBooksSearch") {
+      return {
+        title: item.volumeInfo.title,
+        image: item.volumeInfo.imageLinks?.thumbnail,
+        authors: item.volumeInfo.authors,
+        isbn: item.volumeInfo.industryIdentifiers?.[0]?.identifier,
+      };
+    } else {
+      return {
+        title: item.title,
+        authors: item.author_name,
+        image: `https://covers.openlibrary.org/b/olid/${item.cover_edition_key}-M.jpg`,
+        isbn: item.isbn?.[0],
+      };
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -56,6 +76,28 @@ export default function TabOneScreen() {
           onPress={() => runQuery({ variables: { q: search } })}
         />
       </View>
+      <View style={styles.tabs}>
+        <Text
+          style={
+            provider === "googleBooksSearch"
+              ? { fontWeight: "bold", color: "royalblue" }
+              : {}
+          }
+          onPress={() => setProvider("googleBooksSearch")}
+        >
+          Google Books
+        </Text>
+        <Text
+          style={
+            provider === "openLibrarySearch"
+              ? { fontWeight: "bold", color: "royalblue" }
+              : {}
+          }
+          onPress={() => setProvider("openLibrarySearch")}
+        >
+          Open Library
+        </Text>
+      </View>
       {loading && <ActivityIndicator />}
       {error && (
         <View style={styles.container}>
@@ -64,17 +106,12 @@ export default function TabOneScreen() {
         </View>
       )}
       <FlatList
-        data={data?.googleBooksSearch?.items || []}
-        renderItem={({ item }) => (
-          <BookItem
-            book={{
-              title: item.volumeInfo.title,
-              image: item.volumeInfo.imageLinks?.thumbnail,
-              authors: item.volumeInfo.authors,
-              isbn: item.volumeInfo.industryIdentifiers?.[0]?.identifier,
-            }}
-          />
-        )}
+        data={
+          provider === "googleBooksSearch"
+            ? data?.googleBooksSearch?.items
+            : data?.openLibrarySearch?.docs || []
+        }
+        renderItem={({ item }) => <BookItem book={parseBook(item)} />}
         showsVerticalScrollIndicator={false}
       />
     </View>
@@ -97,6 +134,12 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     padding: 10,
     marginVertical: 5,
+  },
+  tabs: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    alignItems: "center",
+    height: 50,
   },
   title: {
     fontSize: 20,
