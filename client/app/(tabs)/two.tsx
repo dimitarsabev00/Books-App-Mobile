@@ -1,11 +1,11 @@
 import { StyleSheet } from "react-native";
 
-import { Text, View } from "@/components/Themed";
+import { View } from "@/components/Themed";
 import { useMyBooks } from "@/contexts/MyBooksContext";
 import { FlatList } from "react-native";
 import BookItem from "@/components/BookItem";
 
-export default function TabTwoScreen() {
+export default function MyBooks() {
   const { savedBooks } = useMyBooks();
   return (
     <View style={styles.container}>

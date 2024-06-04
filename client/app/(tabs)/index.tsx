@@ -5,6 +5,9 @@ import { gql, useLazyQuery } from "@apollo/client";
 import { FlatList } from "react-native";
 import BookItem from "@/components/BookItem";
 import { useState } from "react";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { parseBook } from "@/services/bookService";
+import { BookProviderType } from "@/constants/Types";
 
 const query = gql`
   query SearchBooks($q: String) {
@@ -37,33 +40,15 @@ const query = gql`
     }
   }
 `;
-export default function TabOneScreen() {
+export default function Search() {
   const [search, setSearch] = useState("");
   const [provider, setProvider] = useState<
-    "googleBooksSearch" | "openLibrarySearch"
+  BookProviderType
   >("googleBooksSearch");
   const [runQuery, { data, loading, error }] = useLazyQuery(query);
 
-  const parseBook = (item: any) => {
-    if (provider === "googleBooksSearch") {
-      return {
-        title: item.volumeInfo.title,
-        image: item.volumeInfo.imageLinks?.thumbnail,
-        authors: item.volumeInfo.authors,
-        isbn: item.volumeInfo.industryIdentifiers?.[0]?.identifier,
-      };
-    } else {
-      return {
-        title: item.title,
-        authors: item.author_name,
-        image: `https://covers.openlibrary.org/b/olid/${item.cover_edition_key}-M.jpg`,
-        isbn: item.isbn?.[0],
-      };
-    }
-  };
-
   return (
-    <View style={styles.container}>
+    <SafeAreaView edges={["top"]} style={styles.container}>
       <View style={styles.searchContainer}>
         <TextInput
           value={search}
@@ -111,10 +96,10 @@ export default function TabOneScreen() {
             ? data?.googleBooksSearch?.items
             : data?.openLibrarySearch?.docs || []
         }
-        renderItem={({ item }) => <BookItem book={parseBook(item)} />}
+        renderItem={({ item }) => <BookItem book={parseBook(item, provider)} />}
         showsVerticalScrollIndicator={false}
       />
-    </View>
+    </SafeAreaView>
   );
 }
 
@@ -122,6 +107,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 10,
+    backgroundColor: "white",
   },
   searchContainer: {
     flexDirection: "row",

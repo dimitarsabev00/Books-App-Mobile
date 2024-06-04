@@ -4,3 +4,5 @@ export interface Book {
   authors: string[];
   isbn?: string;
 }
+
+export type BookProviderType = "googleBooksSearch" | "openLibrarySearch"
