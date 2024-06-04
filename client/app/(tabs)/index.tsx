@@ -1,9 +1,10 @@
-import { ActivityIndicator, StyleSheet } from "react-native";
+import { ActivityIndicator, Button, StyleSheet, TextInput } from "react-native";
 
 import { Text, View } from "@/components/Themed";
-import { gql, useQuery } from "@apollo/client";
+import { gql, useLazyQuery } from "@apollo/client";
 import { FlatList } from "react-native";
 import BookItem from "@/components/BookItem";
+import { useState } from "react";
 
 const query = gql`
   query SearchBooks($q: String) {
@@ -37,12 +38,24 @@ const query = gql`
   }
 `;
 export default function TabOneScreen() {
-  const { data, loading, error } = useQuery(query, {
-    variables: { q: "React Native" },
-  });
+  const [search, setSearch] = useState("");
+
+  const [runQuery, { data, loading, error }] = useLazyQuery(query);
 
   return (
     <View style={styles.container}>
+      <View style={styles.searchContainer}>
+        <TextInput
+          value={search}
+          onChangeText={setSearch}
+          placeholder="Search..."
+          style={styles.searchInput}
+        />
+        <Button
+          title="Search"
+          onPress={() => runQuery({ variables: { q: search } })}
+        />
+      </View>
       {loading && <ActivityIndicator />}
       {error && (
         <View style={styles.container}>
@@ -56,9 +69,9 @@ export default function TabOneScreen() {
           <BookItem
             book={{
               title: item.volumeInfo.title,
-              image: item.volumeInfo.imageLinks.thumbnail,
+              image: item.volumeInfo.imageLinks?.thumbnail,
               authors: item.volumeInfo.authors,
-              // isbn: item.volumeInfo.industryIdentifiers[0].identifier,
+              isbn: item.volumeInfo.industryIdentifiers?.[0]?.identifier,
             }}
           />
         )}
@@ -72,6 +85,18 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 10,
+  },
+  searchContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  searchInput: {
+    flex: 1,
+    borderWidth: 1,
+    borderColor: "gainsboro",
+    borderRadius: 5,
+    padding: 10,
+    marginVertical: 5,
   },
   title: {
     fontSize: 20,
