@@ -2,6 +2,8 @@ import { ActivityIndicator, StyleSheet } from "react-native";
 
 import { Text, View } from "@/components/Themed";
 import { gql, useQuery } from "@apollo/client";
+import { FlatList } from "react-native";
+import BookItem from "@/components/BookItem";
 
 const query = gql`
   query SearchBooks($q: String) {
@@ -39,7 +41,6 @@ export default function TabOneScreen() {
     variables: { q: "React Native" },
   });
 
-
   return (
     <View style={styles.container}>
       {loading && <ActivityIndicator />}
@@ -49,6 +50,20 @@ export default function TabOneScreen() {
           <Text>{error.message}</Text>
         </View>
       )}
+      <FlatList
+        data={data?.googleBooksSearch?.items || []}
+        renderItem={({ item }) => (
+          <BookItem
+            book={{
+              title: item.volumeInfo.title,
+              image: item.volumeInfo.imageLinks.thumbnail,
+              authors: item.volumeInfo.authors,
+              // isbn: item.volumeInfo.industryIdentifiers[0].identifier,
+            }}
+          />
+        )}
+        showsVerticalScrollIndicator={false}
+      />
     </View>
   );
 }
@@ -56,8 +71,7 @@ export default function TabOneScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
+    padding: 10,
   },
   title: {
     fontSize: 20,
