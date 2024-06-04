@@ -1,9 +1,9 @@
 import { StyleSheet } from "react-native";
 
-import { View } from "@/components/Themed";
-import { useMyBooks } from "@/contexts/MyBooksContext";
+import { useMyBooks } from "@/src/contexts/MyBooksContext";
 import { FlatList } from "react-native";
-import BookItem from "@/components/BookItem";
+import { View } from "@/src/components/Themed";
+import BookItem from "@/src/components/BookItem";
 
 export default function MyBooks() {
   const { savedBooks } = useMyBooks();

@@ -1,8 +1,8 @@
 import React from "react";
 import { View, Text, StyleSheet, Image, Pressable } from "react-native";
-import { Book } from "@/constants/Types";
-import { useMyBooks } from "@/contexts/MyBooksContext";
-import Colors from "@/constants/Colors";
+import { Book } from "@/src/constants/Types";
+import { useMyBooks } from "@/src/contexts/MyBooksContext";
+import Colors from "@/src/constants/Colors";
 
 type BookItemProps = {
   book: Book;
@@ -19,7 +19,10 @@ const BookItem: React.FC<BookItemProps> = ({ book }) => {
         <Text style={styles.title}>{book.title}</Text>
         <Text>by {book.authors?.join(", ")}</Text>
         <Pressable
-          style={[styles.saveButton, saved ? { backgroundColor: "lightgray" } : {}]}
+          style={[
+            styles.saveButton,
+            saved ? { backgroundColor: "lightgray" } : {},
+          ]}
           onPress={() => onToggleSaved(book)}
         >
           <Text style={styles.saveButtonText}>

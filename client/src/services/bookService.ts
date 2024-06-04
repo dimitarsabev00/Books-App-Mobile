@@ -1,4 +1,4 @@
-import { BookProviderType } from "@/constants/Types";
+import { BookProviderType } from "@/src/constants/Types";
 
 export const parseBook = (item: any, provider: BookProviderType) => {
   if (provider === "googleBooksSearch") {

@@ -1,13 +1,13 @@
 import { ActivityIndicator, Button, StyleSheet, TextInput } from "react-native";
 
-import { Text, View } from "@/components/Themed";
 import { gql, useLazyQuery } from "@apollo/client";
 import { FlatList } from "react-native";
-import BookItem from "@/components/BookItem";
 import { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { parseBook } from "@/services/bookService";
-import { BookProviderType } from "@/constants/Types";
+import { parseBook } from "@/src/services/bookService";
+import { BookProviderType } from "@/src/constants/Types";
+import { Text, View } from "@/src/components/Themed";
+import BookItem from "@/src/components/BookItem";
 
 const query = gql`
   query SearchBooks($q: String) {
@@ -42,9 +42,8 @@ const query = gql`
 `;
 export default function Search() {
   const [search, setSearch] = useState("");
-  const [provider, setProvider] = useState<
-  BookProviderType
-  >("googleBooksSearch");
+  const [provider, setProvider] =
+    useState<BookProviderType>("googleBooksSearch");
   const [runQuery, { data, loading, error }] = useLazyQuery(query);
 
   return (
