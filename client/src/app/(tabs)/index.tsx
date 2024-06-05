@@ -1,50 +1,28 @@
 import { ActivityIndicator, Button, StyleSheet, TextInput } from "react-native";
-
-import { gql, useLazyQuery } from "@apollo/client";
+import { useLazyQuery } from "@apollo/client";
 import { FlatList } from "react-native";
 import { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { parseBook } from "@/src/services/bookService";
-import { BookProviderType } from "@/src/constants/Types";
 import { Text, View } from "@/src/components/Themed";
 import BookItem from "@/src/components/BookItem";
+import { searchQuery } from "./queries";
 
-const query = gql`
-  query SearchBooks($q: String) {
-    googleBooksSearch(q: $q, country: "US") {
-      items {
-        id
-        volumeInfo {
-          authors
-          averageRating
-          description
-          imageLinks {
-            thumbnail
-          }
-          title
-          subtitle
-          industryIdentifiers {
-            identifier
-            type
-          }
-        }
-      }
-    }
-    openLibrarySearch(q: $q) {
-      docs {
-        author_name
-        title
-        cover_edition_key
-        isbn
-      }
-    }
-  }
-`;
 export default function Search() {
   const [search, setSearch] = useState("");
-  const [provider, setProvider] =
-    useState<BookProviderType>("googleBooksSearch");
-  const [runQuery, { data, loading, error }] = useLazyQuery(query);
+  const [runQuery, { data, loading, error }] = useLazyQuery(searchQuery);
+
+  const mergeBooks = () => {
+    const googleBooks =
+      data?.googleBooksSearch?.items.map((item: any) =>
+        parseBook(item, "googleBooksSearch")
+      ) || [];
+    const openLibraryBooks =
+      data?.openLibrarySearch?.docs.map((item: any) =>
+        parseBook(item, "openLibrarySearch")
+      ) || [];
+    return [...googleBooks, ...openLibraryBooks];
+  };
 
   return (
     <SafeAreaView edges={["top"]} style={styles.container}>
@@ -60,28 +38,6 @@ export default function Search() {
           onPress={() => runQuery({ variables: { q: search } })}
         />
       </View>
-      <View style={styles.tabs}>
-        <Text
-          style={
-            provider === "googleBooksSearch"
-              ? { fontWeight: "bold", color: "royalblue" }
-              : {}
-          }
-          onPress={() => setProvider("googleBooksSearch")}
-        >
-          Google Books
-        </Text>
-        <Text
-          style={
-            provider === "openLibrarySearch"
-              ? { fontWeight: "bold", color: "royalblue" }
-              : {}
-          }
-          onPress={() => setProvider("openLibrarySearch")}
-        >
-          Open Library
-        </Text>
-      </View>
       {loading && <ActivityIndicator />}
       {error && (
         <View style={styles.container}>
@@ -90,12 +46,8 @@ export default function Search() {
         </View>
       )}
       <FlatList
-        data={
-          provider === "googleBooksSearch"
-            ? data?.googleBooksSearch?.items
-            : data?.openLibrarySearch?.docs || []
-        }
-        renderItem={({ item }) => <BookItem book={parseBook(item, provider)} />}
+        data={mergeBooks()}
+        renderItem={({ item }) => <BookItem book={item} />}
         showsVerticalScrollIndicator={false}
       />
     </SafeAreaView>
@@ -119,12 +71,6 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     padding: 10,
     marginVertical: 5,
-  },
-  tabs: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    alignItems: "center",
-    height: 50,
   },
   title: {
     fontSize: 20,
