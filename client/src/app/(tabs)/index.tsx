@@ -38,7 +38,7 @@ export default function Search() {
           onPress={() => runQuery({ variables: { q: search } })}
         />
       </View>
-      {loading && <ActivityIndicator />}
+      {loading && <ActivityIndicator style={{ marginTop: 20 }} />}
       {error && (
         <View style={styles.container}>
           <Text style={styles.title}>Error fetching books</Text>
