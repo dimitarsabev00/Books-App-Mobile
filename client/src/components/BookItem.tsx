@@ -3,17 +3,26 @@ import { View, Text, StyleSheet, Image, Pressable } from "react-native";
 import { Book } from "@/src/constants/Types";
 import { useMyBooks } from "@/src/contexts/MyBooksContext";
 import Colors from "@/src/constants/Colors";
+import { useNavigation, NavigationProp } from "@react-navigation/native";
 
 type BookItemProps = {
   book: Book;
 };
-
+type RootStackParamList = {
+  bookDetails: { book: Book };
+  // other routes can be added here
+};
 const BookItem: React.FC<BookItemProps> = ({ book }) => {
   const { onToggleSaved, isBookSaved } = useMyBooks();
   const saved = isBookSaved(book);
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+
+  const handlePressBook = () => {
+    navigation.navigate("bookDetails", { book });
+  };
 
   return (
-    <View style={styles.container}>
+    <Pressable onPress={handlePressBook} style={styles.container}>
       <Image source={{ uri: book.image }} style={styles.image} />
       <View style={styles.contentContainer}>
         <Text style={styles.title}>{book.title}</Text>
@@ -30,7 +39,7 @@ const BookItem: React.FC<BookItemProps> = ({ book }) => {
           </Text>
         </Pressable>
       </View>
-    </View>
+    </Pressable>
   );
 };
 

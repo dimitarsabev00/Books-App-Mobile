@@ -10,7 +10,6 @@ import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 import "react-native-reanimated";
 
-
 import { ApolloClient, InMemoryCache, ApolloProvider } from "@apollo/client";
 import MyBooksContext from "@/src/contexts/MyBooksContext";
 import { useColorScheme } from "../components/useColorScheme.web";
@@ -74,8 +73,15 @@ function RootLayoutNav() {
           value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
         >
           <Stack>
-            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            <Stack.Screen
+              name="(tabs)"
+              options={{ headerShown: false, title: "Back" }}
+            />
             <Stack.Screen name="modal" options={{ presentation: "modal" }} />
+            <Stack.Screen
+              name="bookDetails"
+              options={{ title: "Book Details" }}
+            />
           </Stack>
         </ThemeProvider>
       </MyBooksContext>
