@@ -27,6 +27,7 @@ export const searchQuery = gql`
         title
         cover_edition_key
         isbn
+        ratings_average
       }
     }
   }

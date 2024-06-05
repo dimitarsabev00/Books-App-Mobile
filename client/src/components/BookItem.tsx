@@ -4,14 +4,17 @@ import { Book } from "@/src/constants/Types";
 import { useMyBooks } from "@/src/contexts/MyBooksContext";
 import Colors from "@/src/constants/Colors";
 import { useNavigation, NavigationProp } from "@react-navigation/native";
+import { FontAwesome } from "@expo/vector-icons";
 
 type BookItemProps = {
   book: Book;
 };
+
 type RootStackParamList = {
   bookDetails: { book: Book };
   // other routes can be added here
 };
+
 const BookItem: React.FC<BookItemProps> = ({ book }) => {
   const { onToggleSaved, isBookSaved } = useMyBooks();
   const saved = isBookSaved(book);
@@ -20,6 +23,21 @@ const BookItem: React.FC<BookItemProps> = ({ book }) => {
   const handlePressBook = () => {
     navigation.navigate("bookDetails", { book });
   };
+  console.log(book.rating);
+  const renderStars = (rating: number) => {
+    const stars = [];
+    for (let i = 1; i <= 5; i++) {
+      stars.push(
+        <FontAwesome
+          key={i}
+          name={i <= rating ? "star" : "star-o"}
+          size={20}
+          color="gold"
+        />
+      );
+    }
+    return stars;
+  };
 
   return (
     <Pressable onPress={handlePressBook} style={styles.container}>
@@ -27,6 +45,7 @@ const BookItem: React.FC<BookItemProps> = ({ book }) => {
       <View style={styles.contentContainer}>
         <Text style={styles.title}>{book.title}</Text>
         <Text>by {book.authors?.join(", ")}</Text>
+        <View style={styles.ratingContainer}>{renderStars(book.rating)}</View>
         <Pressable
           style={[
             styles.saveButton,
@@ -61,6 +80,10 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 16,
     fontWeight: "500",
+  },
+  ratingContainer: {
+    flexDirection: "row",
+    marginVertical: 5,
   },
   saveButton: {
     backgroundColor: Colors.light.tint,

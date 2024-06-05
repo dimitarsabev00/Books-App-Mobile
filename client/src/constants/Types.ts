@@ -3,6 +3,7 @@ export interface Book {
   title: string;
   authors: string[];
   isbn?: string;
+  rating: number;
 }
 
-export type BookProviderType = "googleBooksSearch" | "openLibrarySearch"
+export type BookProviderType = "googleBooksSearch" | "openLibrarySearch";

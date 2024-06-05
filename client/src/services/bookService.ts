@@ -7,6 +7,7 @@ export const parseBook = (item: any, provider: BookProviderType) => {
       image: item.volumeInfo.imageLinks?.thumbnail,
       authors: item.volumeInfo.authors,
       isbn: item.volumeInfo.industryIdentifiers?.[0]?.identifier,
+      rating:item.volumeInfo.averageRating
     };
   } else {
     return {
@@ -14,6 +15,7 @@ export const parseBook = (item: any, provider: BookProviderType) => {
       authors: item.author_name,
       image: `https://covers.openlibrary.org/b/olid/${item.cover_edition_key}-M.jpg`,
       isbn: item.isbn?.[0],
+      rating:item.ratings_average
     };
   }
 };
