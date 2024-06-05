@@ -23,7 +23,6 @@ const BookItem: React.FC<BookItemProps> = ({ book }) => {
   const handlePressBook = () => {
     navigation.navigate("bookDetails", { book });
   };
-  console.log(book.rating);
   const renderStars = (rating: number) => {
     const stars = [];
     for (let i = 1; i <= 5; i++) {
